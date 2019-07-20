@@ -19,4 +19,11 @@ public class BasEmpServiceImpl extends AbstractService<BasEmp> implements BasEmp
     @Resource
     private BasEmpMapper basEmpMapper;
 
+    @Override
+    public BasEmp login(String username) {
+        BasEmp t = new BasEmp();
+        t.setName(username);
+        return basEmpMapper.selectOne(t);
+    }
+
 }
