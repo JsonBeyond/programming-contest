@@ -1,5 +1,7 @@
 package com.company.project.web;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.AttendanceRecord;
@@ -18,7 +20,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,15 +43,29 @@ public class LoginController {
     @Resource
     private AttendanceRecordService attendanceRecordService;
 
-    @PostMapping("/{username}")
+    @PostMapping("")
     @ResponseBody
-    public Result login(@PathVariable String username) throws Exception {
-        BasEmp user = basEmpService.login(username);
+    public Result login(@RequestBody JSONObject jsonObject) throws Exception {
+        BasEmp user = basEmpService.login(jsonObject.getString("userName"));
         if (user == null) {
             return ResultGenerator.genFailResult("用户名或密码错误");
         }
         String token = JwtUtils.sign(user, 24L * 3600L * 1000L);
         redisUtils.setNx(Constance.LOGIN_KEY + token, "1", 1, TimeUnit.DAYS);
+        return ResultGenerator.genSuccessResult(token);
+    }
+
+    @GetMapping("/{token}")
+    @ResponseBody
+    public Result token(@PathVariable String token) throws Exception {
+        BasEmp unsign = JwtUtils.unsign(token, BasEmp.class);
+        if (unsign == null) {
+            return ResultGenerator.genFailResult("请登录");
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", unsign.getName());
+        jsonObject.put("access", new JSONArray().add("admin"));
+        jsonObject.put("token", token);
         return ResultGenerator.genSuccessResult(token);
     }
 
@@ -70,13 +89,13 @@ public class LoginController {
                 attendanceRecord.setDep_code(arrar[0]);
                 attendanceRecord.setStaff_name(arrar[1]);
                 attendanceRecord.setAttendance_num(Integer.valueOf(arrar[2]));
-                attendanceRecord.setAttendance_time(DateUtils.parse(arrar[3],"yyyy/mm/dd HH:mm"));
+                attendanceRecord.setAttendance_time(DateUtils.parse(arrar[3], "yyyy/mm/dd HH:mm"));
                 attendanceRecord.setMachine_code(Integer.valueOf(arrar[4]));
                 dataList.add(attendanceRecord);
             }
 
             List<List<AttendanceRecord>> partition = Lists.partition(dataList, 10000);
-            for (List p: partition){
+            for (List p : partition) {
                 attendanceRecordService.batchInsert(p);
             }
         } catch (Exception e) {

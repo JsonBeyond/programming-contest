@@ -1,4 +1,7 @@
 package com.company.project.web;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.AttendanceResult;
@@ -12,8 +15,8 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by CodeGenerator on 2019/07/20.
-*/
+ * Created by CodeGenerator on 2019/07/20.
+ */
 @RestController
 @RequestMapping("/attendance/result")
 public class AttendanceResultController {
@@ -53,4 +56,15 @@ public class AttendanceResultController {
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
+
+    @PostMapping("/rank")
+    public Result list(@RequestBody JSONObject jsonObject) {
+        String dateLimit = jsonObject.getString("dateLimit");
+        Integer year = jsonObject.getInteger("year");
+        Integer range = jsonObject.getInteger("range");
+//        attendanceResultService.doTime();
+        JSONArray rank = attendanceResultService.rank(dateLimit, year, range);
+        return ResultGenerator.genSuccessResult(rank);
+    }
+
 }

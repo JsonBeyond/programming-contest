@@ -1,4 +1,5 @@
 package com.company.project.service;
+import com.alibaba.fastjson.JSONArray;
 import com.company.project.model.AttendanceResult;
 import com.company.project.core.Service;
 
@@ -8,4 +9,7 @@ import com.company.project.core.Service;
  */
 public interface AttendanceResultService extends Service<AttendanceResult> {
 
+    void doTime();
+
+    JSONArray rank(String dateLimit, Integer year, Integer range);
 }
