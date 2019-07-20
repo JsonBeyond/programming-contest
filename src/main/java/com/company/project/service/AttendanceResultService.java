@@ -9,6 +9,7 @@ import com.company.project.core.Service;
  */
 public interface AttendanceResultService extends Service<AttendanceResult> {
 
+    void updateFromRecord();
     void doTime();
 
     JSONArray rank(String dateLimit, Integer year, Integer range);
