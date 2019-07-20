@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.BasEmpMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.BasEmp">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="dep_id" jdbcType="BIGINT" property="dep_id" />
+    <result column="dep_code" jdbcType="VARCHAR" property="dep_code" />
+    <result column="dep_name" jdbcType="VARCHAR" property="dep_name" />
+  </resultMap>
+</mapper>
