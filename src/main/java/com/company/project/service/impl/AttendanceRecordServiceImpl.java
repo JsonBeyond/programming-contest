@@ -47,8 +47,11 @@ public class AttendanceRecordServiceImpl extends AbstractService<AttendanceRecor
 
     @Override
     public void generateDataFromRecordToResult() {
+        long start = System.currentTimeMillis();
         attendanceRecordMapper.selectInto();
         attendanceResultService.updateFromRecord();
+        System.out.println(System.currentTimeMillis()-start);
         attendanceResultService.doTime();
+        System.out.println(System.currentTimeMillis()-start);
     }
 }
