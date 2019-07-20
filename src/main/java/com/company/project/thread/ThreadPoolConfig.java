@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @EnableAsync
 @Configuration
-@EnableConfigurationProperties(ThreadPoolProperties.class)
+//@EnableConfigurationProperties(ThreadPoolProperties.class)
 @Slf4j
 public class ThreadPoolConfig {
 
