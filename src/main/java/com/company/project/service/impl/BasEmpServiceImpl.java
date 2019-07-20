@@ -14,7 +14,6 @@ import javax.annotation.Resource;
  * Created by CodeGenerator on 2019/07/20.
  */
 @Service
-@Transactional
 public class BasEmpServiceImpl extends AbstractService<BasEmp> implements BasEmpService {
     @Resource
     private BasEmpMapper basEmpMapper;
@@ -23,7 +22,7 @@ public class BasEmpServiceImpl extends AbstractService<BasEmp> implements BasEmp
     public BasEmp login(String username) {
         BasEmp t = new BasEmp();
         t.setName(username);
-        return basEmpMapper.selectOne(t);
+        return  basEmpMapper.selectOne(t);
     }
 
 }
