@@ -20,23 +20,6 @@
         <version>1.5.13.RELEASE</version>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>Ali-Repository</id>
-            <name>AliBaba</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-        </repository>
-
-        <repository>
-            <id>Pagoda-Repository</id>
-            <name>pagoda</name>
-            <url>http://maven.dev.pagoda.com.cn:10008/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!--Spring Boot依赖-->
         <dependency>
@@ -179,13 +162,21 @@
         </plugins>
     </build>
 
+
     <repositories>
         <repository>
-            <id>aliyun-repos</id>
+            <id>Ali-Repository</id>
+            <name>AliBaba</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+        </repository>
+
+        <repository>
+            <id>Pagoda-Repository</id>
+            <name>pagoda</name>
+            <url>http://maven.dev.pagoda.com.cn:10008/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
 
