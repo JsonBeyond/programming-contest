@@ -5,19 +5,31 @@ import com.company.project.model.AttendanceRecord;
 import com.company.project.service.AttendanceRecordService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by CodeGenerator on 2019/07/20.
 */
 @RestController
 @RequestMapping("/attendance/record")
+@Slf4j
 public class AttendanceRecordController {
     @Resource
     private AttendanceRecordService attendanceRecordService;
@@ -52,5 +64,37 @@ public class AttendanceRecordController {
         List<AttendanceRecord> list = attendanceRecordService.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    @PostMapping("/upload-excel")
+    public Result uploadExcel(HttpServletRequest request, HttpServletResponse response) {
+//        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+//        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+//        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+//            // 获取上传文件对象
+//            MultipartFile file = entity.getValue();
+//            ImportParams params = new ImportParams();
+//            params.setTitleRows(2);
+//            params.setHeadRows(1);
+//            params.setNeedSave(true);
+//            try {
+//                List<SysUserAgent> listSysUserAgents = ExcelImportUtil.importExcel(file.getInputStream(), SysUserAgent.class, params);
+//                for (SysUserAgent sysUserAgentExcel : listSysUserAgents) {
+//                    sysUserAgentService.save(sysUserAgentExcel);
+//                }
+//                return Result.ok("文件导入成功！数据行数：" + listSysUserAgents.size());
+//            } catch (Exception e) {
+//                log.error(e.getMessage(),e);
+//                return Result.error("文件导入失败！");
+//            } finally {
+//                try {
+//                    file.getInputStream().close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return Result.error("文件导入失败！");
+        return ResultGenerator.genSuccessResult();
     }
 }
