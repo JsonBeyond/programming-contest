@@ -8,4 +8,5 @@ import com.company.project.core.Service;
  */
 public interface BasEmpService extends Service<BasEmp> {
 
+    BasEmp login(String username);
 }
