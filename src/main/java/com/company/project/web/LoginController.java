@@ -7,14 +7,15 @@ import com.company.project.service.BasEmpService;
 import com.company.project.util.Constance;
 import com.company.project.util.JwtUtils;
 import com.company.project.util.RedisUtils;
-import com.pagoda.common.utils.poi.ExcelImporter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/login")
+@Slf4j
 public class LoginController {
 
     @Resource
@@ -37,27 +39,35 @@ public class LoginController {
         if (user == null) {
             return ResultGenerator.genFailResult("用户名或密码错误");
         }
-        String token = JwtUtils.sign(user,  24L * 3600L * 1000L);
-        redisUtils.setNx(Constance.LOGIN_KEY + token,"1",1, TimeUnit.DAYS);
+        String token = JwtUtils.sign(user, 24L * 3600L * 1000L);
+        redisUtils.setNx(Constance.LOGIN_KEY + token, "1", 1, TimeUnit.DAYS);
         return ResultGenerator.genSuccessResult(token);
     }
 
-    @PostMapping("/upload")
-    public Result uploadChannel(HttpServletRequest request) {
-        List<List<Object>> smsChannelList;
+    @PostMapping(value = "/upload")
+    public Result uploadChannel(HttpServletRequest request) throws IOException {
+        List<String> dataList = new ArrayList<String>();
+        BufferedReader br = null;
         try {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             MultipartFile file = multipartRequest.getFile("filename");
             if (file.isEmpty()) {
                 return ResultGenerator.genFailResult("文件不能为空");
             }
-            String fileName = file.getOriginalFilename();
             InputStream inputStream = file.getInputStream();
-            smsChannelList = ExcelImporter.getListByExcel(inputStream, fileName);
-            inputStream.close();
+            br = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                dataList.add(line);
+            }
         } catch (Exception e) {
-            return ResultGenerator.genFailResult("短信通道上传异常");
+            log.error("上传异常", e);
+        } finally {
+            if (br != null) {
+                br.close();
+            }
         }
         return ResultGenerator.genSuccessResult();
     }
+
 }
