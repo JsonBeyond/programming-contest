@@ -62,7 +62,6 @@ public class AttendanceResultController {
         String dateLimit = jsonObject.getString("dateLimit");
         Integer year = jsonObject.getInteger("year");
         Integer range = jsonObject.getInteger("range");
-//        attendanceResultService.doTime();
         JSONArray rank = attendanceResultService.rank(dateLimit, year, range);
         return ResultGenerator.genSuccessResult(rank);
     }
