@@ -1,18 +1,21 @@
-package com.company.project.model;
+package com.company.project.web.vo;
 
 import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecgframework.poi.excel.annotation.ExcelTarget;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Date;
-import javax.persistence.*;
 
-@Table(name = "attendance_record")
-public class AttendanceRecord {
-    /**
-     * 考勤记录ID
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+/**
+ * @ClassName AttendanceRecordVo
+ * @Description TODO
+ * @Author Alex
+ * @CreateDate 2019/7/20 11:50
+ * @Version 1.0
+ */
+public class AttendanceRecordVo {
 
     /**
      * 部门代码
@@ -23,44 +26,22 @@ public class AttendanceRecord {
     /**
      * 员工名称
      */
-    @Excel(name = "staff_name",width = 15)
     private String staff_name;
 
     /**
      * 考勤号码
      */
-    @Excel(name = "attendance_num",width = 15)
     private Integer attendance_num;
 
     /**
      * 日期时间
      */
-    @Excel(name = "attendance_time",width = 15)
     private Date attendance_time;
 
     /**
      * 机器号
      */
-    @Excel(name = "machine_code",width = 15)
     private Integer machine_code;
-
-    /**
-     * 获取考勤记录ID
-     *
-     * @return id - 考勤记录ID
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * 设置考勤记录ID
-     *
-     * @param id 考勤记录ID
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * 获取部门代码
