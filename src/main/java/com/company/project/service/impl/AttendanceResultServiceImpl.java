@@ -9,6 +9,7 @@ import com.company.project.core.AbstractService;
 import com.github.pagehelper.PageHelper;
 import com.pagoda.common.utils.DateUtils;
 import com.company.project.util.RedisUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Condition;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 
 /**
@@ -36,6 +38,8 @@ public class AttendanceResultServiceImpl extends AbstractService<AttendanceResul
     private AttendanceResultMapper attendanceResultMapper;
     @Resource
     private RedisUtils redisUtils;
+    @Autowired
+    private Executor defaultAsyncPool;
 
     @Override
     public void doTime() {
@@ -45,23 +49,28 @@ public class AttendanceResultServiceImpl extends AbstractService<AttendanceResul
         if (list == null) {
             return;
         }
+
         for (AttendanceResult result : list) {
-            Calendar startCalendar = Calendar.getInstance();
-            startCalendar.setTime(result.getAttendance_start_time());
-            String startKey = startCalendar.get(Calendar.YEAR) + ":" + startCalendar.get(Calendar.MONTH) + 1
-                    + ":" + startCalendar.get(Calendar.WEEK_OF_YEAR)
-                    + ":" + startCalendar.get(Calendar.DAY_OF_MONTH);
-            int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
-            int startMinute = startCalendar.get(Calendar.MINUTE);
-            int score = (startHour - 6) * 60 + startMinute;
+            defaultAsyncPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Calendar startCalendar = Calendar.getInstance();
+                    startCalendar.setTime(result.getAttendance_start_time());
+                    String startKey = startCalendar.get(Calendar.YEAR) + ":" + startCalendar.get(Calendar.MONTH) + 1
+                            + ":" + startCalendar.get(Calendar.WEEK_OF_YEAR)
+                            + ":" + startCalendar.get(Calendar.DAY_OF_MONTH);
+                    int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
+                    int startMinute = startCalendar.get(Calendar.MINUTE);
+                    int score = (startHour - 6) * 60 + startMinute;
 
-            Calendar endCalendar = Calendar.getInstance();
-            endCalendar.setTime(result.getAttendance_end_time());
-            int endHour = endCalendar.get(Calendar.HOUR_OF_DAY);
-            int endMinute = endCalendar.get(Calendar.MINUTE);
-            int endScore = (24 - endHour) * 60 + endMinute;
-
-            redisUtils.putZSet(startKey, result.getStaff_name() + "," + result.getDep_code(), score + endScore);
+                    Calendar endCalendar = Calendar.getInstance();
+                    endCalendar.setTime(result.getAttendance_end_time());
+                    int endHour = endCalendar.get(Calendar.HOUR_OF_DAY);
+                    int endMinute = endCalendar.get(Calendar.MINUTE);
+                    int endScore = (24 - endHour) * 60 + endMinute;
+                    redisUtils.putZSet(startKey, result.getStaff_name() + "," + result.getDep_code(), score + endScore);
+                }
+            });
 
         }
 
@@ -72,7 +81,7 @@ public class AttendanceResultServiceImpl extends AbstractService<AttendanceResul
         JSONArray ranks = new JSONArray();
         if (dateLimit.equalsIgnoreCase("W")) {
             //周
-            String keys = year + ":*:"+range+":*";
+            String keys = year + ":*:" + range + ":*";
             Set<String> keySet = redisUtils.keys(keys);
             if (keySet == null || keySet.size() <= 0) {
                 return null;
@@ -82,7 +91,7 @@ public class AttendanceResultServiceImpl extends AbstractService<AttendanceResul
             //月
             String srange = range.toString();
             if (range < 10) {
-                srange = "0"+range;
+                srange = "0" + range;
             }
             String keys = year + ":" + srange + ":*";
             Set<String> keySet = redisUtils.keys(keys);
