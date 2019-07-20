@@ -66,35 +66,32 @@ public class AttendanceRecordController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
-    @PostMapping("/upload-excel")
+    @PostMapping(value = "/upload-excel", produces = "application/json; charset=utf-8")
     public Result uploadExcel(HttpServletRequest request, HttpServletResponse response) {
-//        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-//        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-//        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-//            // 获取上传文件对象
-//            MultipartFile file = entity.getValue();
-//            ImportParams params = new ImportParams();
-//            params.setTitleRows(2);
-//            params.setHeadRows(1);
-//            params.setNeedSave(true);
-//            try {
-//                List<SysUserAgent> listSysUserAgents = ExcelImportUtil.importExcel(file.getInputStream(), SysUserAgent.class, params);
-//                for (SysUserAgent sysUserAgentExcel : listSysUserAgents) {
-//                    sysUserAgentService.save(sysUserAgentExcel);
-//                }
-//                return Result.ok("文件导入成功！数据行数：" + listSysUserAgents.size());
-//            } catch (Exception e) {
-//                log.error(e.getMessage(),e);
-//                return Result.error("文件导入失败！");
-//            } finally {
-//                try {
-//                    file.getInputStream().close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        return Result.error("文件导入失败！");
-        return ResultGenerator.genSuccessResult();
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            // 获取上传文件对象
+            MultipartFile file = entity.getValue();
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                List<AttendanceRecord> attendanceRecords = ExcelImportUtil.importExcel(file.getInputStream(), AttendanceRecord.class, params);
+                attendanceRecordService.batchInsert(attendanceRecords);
+                return ResultGenerator.genSuccessResult("文件导入成功！数据行数：" + attendanceRecords.size());
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                return ResultGenerator.genFailResult("文件导入失败！");
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return ResultGenerator.genFailResult("文件导入失败！");
     }
 }

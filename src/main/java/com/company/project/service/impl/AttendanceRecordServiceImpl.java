@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -19,4 +20,8 @@ public class AttendanceRecordServiceImpl extends AbstractService<AttendanceRecor
     @Resource
     private AttendanceRecordMapper attendanceRecordMapper;
 
+    @Override
+    public void batchInsert(List<AttendanceRecord> attendanceRecords) {
+        attendanceRecordMapper.insertList(attendanceRecords);
+    }
 }
