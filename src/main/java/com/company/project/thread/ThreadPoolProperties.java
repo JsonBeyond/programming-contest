@@ -14,7 +14,7 @@ public class ThreadPoolProperties {
 	/**
 	 * 线程池维护线程的最少数量
 	 */
-	private int corePoolSize = 5;
+	private int corePoolSize = 10;
 
 	/**
 	 * 线程池维护线程的最大数量
@@ -29,5 +29,5 @@ public class ThreadPoolProperties {
 	/**
 	 * 缓存队列
 	 */
-	private int queueCapacity = 20;
+	private int queueCapacity = 10000;
 }
