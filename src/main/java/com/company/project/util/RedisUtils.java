@@ -1,5 +1,7 @@
 package com.company.project.util;
 
+import com.company.project.core.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import redis.clients.util.SafeEncoder;
  * @author qxs on 2019/7/20.
  */
 @Component
+@Slf4j
 public class RedisUtils {
 
     /**
@@ -53,5 +56,13 @@ public class RedisUtils {
 
         return obj != null && obj instanceof byte[] && "ok".equalsIgnoreCase(new String((byte[]) obj));
 
+    }
+    public Boolean hasKey(final String key) throws ServiceException {
+        try {
+            return stringRedisTemplate.hasKey(key);
+        } catch (Exception e) {
+            log.error("redis exception error:{}", e);
+            throw new ServiceException("redis 连接异常");
+        }
     }
 }

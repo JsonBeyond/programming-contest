@@ -5,10 +5,8 @@ import com.company.project.model.AttendanceResult;
 import com.company.project.service.AttendanceResultService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -46,10 +44,12 @@ public class AttendanceResultController {
         return ResultGenerator.genSuccessResult(attendanceResult);
     }
 
-    @PostMapping("/list")
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    @PostMapping("/list/{username}")
+    public Result list(@PathVariable String username, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size) {
         PageHelper.startPage(page, size);
-        List<AttendanceResult> list = attendanceResultService.findAll();
+        Condition condition = new Condition(AttendanceResult.class);
+        condition.createCriteria().andEqualTo("staff_name", username);
+        List<AttendanceResult> list = attendanceResultService.findByCondition(condition);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
