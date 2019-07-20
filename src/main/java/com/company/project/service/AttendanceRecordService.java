@@ -1,6 +1,7 @@
 package com.company.project.service;
 import com.company.project.model.AttendanceRecord;
 import com.company.project.core.Service;
+import com.company.project.web.vo.AttendanceRecordVo;
 
 import java.util.List;
 
@@ -11,4 +12,10 @@ import java.util.List;
 public interface AttendanceRecordService extends Service<AttendanceRecord> {
 
     void batchInsert(List<AttendanceRecord> attendanceRecords);
+
+    List<AttendanceRecord> selectListByParams(AttendanceRecordVo attendanceRecordVo);
+
+    void saveExcelRecord(List<AttendanceRecord> dataList);
+
+    void generateDataFromRecordToResult();
 }

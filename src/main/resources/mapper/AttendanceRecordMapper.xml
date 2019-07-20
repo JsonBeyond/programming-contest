@@ -12,4 +12,50 @@
     <result column="attendance_time" jdbcType="TIMESTAMP" property="attendance_time" />
     <result column="machine_code" jdbcType="INTEGER" property="machine_code" />
   </resultMap>
+
+  <select id="selectListByParams" parameterType="com.company.project.web.vo.AttendanceRecordVo" resultType="com.company.project.model.AttendanceRecord">
+    SELECT
+    dep_code,
+    staff_name,
+    attendance_num,
+    attendance_time,
+    machine_code
+    FROM attendance_record
+    <include refid="selectPageParmas"/>
+    ORDER BY attendance_time desc
+  </select>
+
+    <sql id="selectPageParmas">
+    <where>
+      <if test="department != null and department != ''">
+        dep_code = #{dep_code,jdbcType=VARCHAR}
+      </if>
+      <if test="userName != null and userName != ''">
+        AND staff_name #{staff_name,jdbcType=VARCHAR}
+      </if>
+      <if test="startDate != null and startDate != ''">
+        AND attendance_time > #{startDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="endDate != null and endDate != ''">
+        AND attendance_time > #{endDate,jdbcType=TIMESTAMP}
+      </if>
+
+    </where>
+    </sql>
+
+    <insert id="selectInto">
+        INSERT INTO attendance_result ( dep_code, staff_name, attendance_num, machine_code, attendance_start_time, attendance_end_time ) SELECT
+        dep_code,
+        staff_name,
+        attendance_num,
+        machine_code,
+        -- DATE_FORMAT( attendance_time, "%Y-%m-%d" ) AS currentday,
+        MIN( IF ( HOUR ( attendance_time ) > 9 OR 6 > HOUR ( attendance_time ), NULL, attendance_time ) ) AS attendance_start_time,
+        MAX( IF ( 18 > HOUR ( attendance_time ), NULL, attendance_time ) ) AS attendance_end_time
+        FROM
+        attendance_record
+        GROUP BY
+        staff_name,
+        DATE_FORMAT( attendance_time, "%Y-%m-%d" )
+    </insert>
 </mapper>

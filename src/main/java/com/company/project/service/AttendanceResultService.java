@@ -8,4 +8,5 @@ import com.company.project.core.Service;
  */
 public interface AttendanceResultService extends Service<AttendanceResult> {
 
+    void updateFromRecord();
 }

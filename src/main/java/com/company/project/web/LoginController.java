@@ -50,43 +50,4 @@ public class LoginController {
         return ResultGenerator.genSuccessResult(token);
     }
 
-    @PostMapping(value = "/upload")
-    public Result uploadChannel(HttpServletRequest request) throws IOException {
-        List<AttendanceRecord> dataList = new ArrayList<>();
-        BufferedReader br = null;
-        try {
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-            MultipartFile file = multipartRequest.getFile("filename");
-            if (file.isEmpty()) {
-                return ResultGenerator.genFailResult("文件不能为空");
-            }
-            InputStream inputStream = file.getInputStream();
-            br = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
-            String line = "";
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                AttendanceRecord attendanceRecord = new AttendanceRecord();
-                String[] arrar = line.split(",");
-                attendanceRecord.setDep_code(arrar[0]);
-                attendanceRecord.setStaff_name(arrar[1]);
-                attendanceRecord.setAttendance_num(Integer.valueOf(arrar[2]));
-                attendanceRecord.setAttendance_time(DateUtils.parse(arrar[3],"yyyy/mm/dd HH:mm"));
-                attendanceRecord.setMachine_code(Integer.valueOf(arrar[4]));
-                dataList.add(attendanceRecord);
-            }
-
-            List<List<AttendanceRecord>> partition = Lists.partition(dataList, 10000);
-            for (List p: partition){
-                attendanceRecordService.batchInsert(p);
-            }
-        } catch (Exception e) {
-            log.error("上传异常", e);
-        } finally {
-            if (br != null) {
-                br.close();
-            }
-        }
-        return ResultGenerator.genSuccessResult();
-    }
-
 }

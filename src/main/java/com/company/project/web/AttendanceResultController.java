@@ -1,7 +1,9 @@
 package com.company.project.web;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.AttendanceRecord;
 import com.company.project.model.AttendanceResult;
+import com.company.project.service.AttendanceRecordService;
 import com.company.project.service.AttendanceResultService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -19,6 +21,8 @@ import java.util.List;
 public class AttendanceResultController {
     @Resource
     private AttendanceResultService attendanceResultService;
+    @Resource
+    private AttendanceRecordService attendanceRecordService;
 
     @PostMapping("/add")
     public Result add(AttendanceResult attendanceResult) {
@@ -52,5 +56,11 @@ public class AttendanceResultController {
         List<AttendanceResult> list = attendanceResultService.findByCondition(condition);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
+    }
+
+    @PostMapping("/syncDataFromRecordToResult")
+    public Result syncDataFromRecordToResult() {
+        attendanceRecordService.generateDataFromRecordToResult();
+        return ResultGenerator.genSuccessResult();
     }
 }
