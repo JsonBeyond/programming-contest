@@ -90,15 +90,27 @@ public class AttendanceRecordController {
             br = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
             String line = "";
             br.readLine();
+            int count = 0;
             while ((line = br.readLine()) != null) {
-                AttendanceRecord attendanceRecord = new AttendanceRecord();
-                String[] arrar = line.split(",");
-                attendanceRecord.setDep_code(arrar[0]);
-                attendanceRecord.setStaff_name(arrar[1]);
-                attendanceRecord.setAttendance_num(Integer.valueOf(arrar[2]));
-                attendanceRecord.setAttendance_time(DateUtils.parse(arrar[3],"yyyy/mm/dd HH:mm"));
-                attendanceRecord.setMachine_code(Integer.valueOf(arrar[4]));
-                dataList.add(attendanceRecord);
+                try {
+
+
+                    AttendanceRecord attendanceRecord = new AttendanceRecord();
+                    String[] arrar = line.split(",");
+                    attendanceRecord.setDep_code(arrar[0]);
+                    attendanceRecord.setStaff_name(arrar[1]);
+                    attendanceRecord.setAttendance_num(Integer.valueOf(arrar[2]));
+                    attendanceRecord.setAttendance_time(DateUtils.parse(arrar[3], "yyyy/mm/dd HH:mm"));
+                    attendanceRecord.setMachine_code(Integer.valueOf(arrar[4]));
+                    if (count == 90295) {
+
+                        System.out.println(count);
+                    }
+                    count++;
+                    dataList.add(attendanceRecord);
+                }catch (Exception e){
+
+                }
             }
             attendanceRecordService.saveExcelRecord(dataList);
         } catch (Exception e) {
