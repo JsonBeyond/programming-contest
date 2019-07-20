@@ -110,8 +110,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authorityInterceptor).addPathPatterns("/bas/**");
-        registry.addInterceptor(authorityInterceptor).addPathPatterns("/attendance/**");
+//        registry.addInterceptor(authorityInterceptor).addPathPatterns("/bas/**");
+//        registry.addInterceptor(authorityInterceptor).addPathPatterns("/attendance/**");
     }
 
     private void responseResult(HttpServletResponse response, Result result) {

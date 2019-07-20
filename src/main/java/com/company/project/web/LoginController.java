@@ -2,11 +2,15 @@ package com.company.project.web;
 
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.AttendanceRecord;
 import com.company.project.model.BasEmp;
+import com.company.project.service.AttendanceRecordService;
 import com.company.project.service.BasEmpService;
 import com.company.project.util.Constance;
 import com.company.project.util.JwtUtils;
 import com.company.project.util.RedisUtils;
+import com.google.common.collect.Lists;
+import com.pagoda.common.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +35,8 @@ public class LoginController {
     private BasEmpService basEmpService;
     @Resource
     private RedisUtils redisUtils;
+    @Resource
+    private AttendanceRecordService attendanceRecordService;
 
     @PostMapping("/{username}")
     @ResponseBody
@@ -46,7 +52,7 @@ public class LoginController {
 
     @PostMapping(value = "/upload")
     public Result uploadChannel(HttpServletRequest request) throws IOException {
-        List<String> dataList = new ArrayList<String>();
+        List<AttendanceRecord> dataList = new ArrayList<>();
         BufferedReader br = null;
         try {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -57,8 +63,21 @@ public class LoginController {
             InputStream inputStream = file.getInputStream();
             br = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
             String line = "";
+            br.readLine();
             while ((line = br.readLine()) != null) {
-                dataList.add(line);
+                AttendanceRecord attendanceRecord = new AttendanceRecord();
+                String[] arrar = line.split(",");
+                attendanceRecord.setDep_code(arrar[0]);
+                attendanceRecord.setStaff_name(arrar[1]);
+                attendanceRecord.setAttendance_num(Integer.valueOf(arrar[2]));
+                attendanceRecord.setAttendance_time(DateUtils.parse(arrar[3],"yyyy/mm/dd HH:mm"));
+                attendanceRecord.setMachine_code(Integer.valueOf(arrar[4]));
+                dataList.add(attendanceRecord);
+            }
+
+            List<List<AttendanceRecord>> partition = Lists.partition(dataList, 10000);
+            for (List p: partition){
+                attendanceRecordService.batchInsert(p);
             }
         } catch (Exception e) {
             log.error("上传异常", e);
